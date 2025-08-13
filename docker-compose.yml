@@ -1,0 +1,39 @@
+services:
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: hotel
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./backend/db_init.sql:/docker-entrypoint-initdb.d/db_init.sql
+
+  backend:
+    build: ./backend
+    command: npm run dev
+    volumes:
+      - ./backend:/app:cached
+      - /app/node_modules
+    environment:
+      DATABASE_URL: postgres://user:pass@db:5432/hotel
+    ports:
+      - "4000:4000"
+    depends_on:
+      - db
+
+  frontend:
+    build: ./frontend
+    command: npm run dev
+    volumes:
+      - ./frontend:/app:cached
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:4000/api
+      API_URL_INTERNAL: http://backend:4000/api
+    depends_on:
+      - backend
