@@ -1,9 +1,9 @@
 {
   "name": "hotel-booking-backend",
   "version": "1.0.0",
-  "main": "dist/index.js",
+  "main": "dist/server.js",
   "scripts": {
-    "dev": "ts-node-dev src/index.ts"
+    "dev": "ts-node-dev src/server.ts"
   },
   "dependencies": {
     "cors": "^2.8.5",

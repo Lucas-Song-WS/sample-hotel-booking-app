@@ -1,5 +1,7 @@
 import { Router } from "express";
-import { pool } from "../db";
+import { config } from "../config";
+
+const { pool } = config.db;
 
 const router = Router();
 
