@@ -8,7 +8,7 @@ import { RoomCharge } from "../domain/value-objects/RoomCharge";
 const { pool } = config.db;
 
 export class BookingRepository implements IBookingRepository {
-  async save(booking: Booking): Promise<void> {
+  async save(booking: Booking): Promise<number> {
     const client = await pool.connect();
 
     try {
@@ -30,9 +30,9 @@ export class BookingRepository implements IBookingRepository {
         booking.bookingRooms.map(async (bookingRoom) => {
           const bookingRoomResult = await client.query(
             `INSERT INTO t_booking_room_map
-           (booking_seq, room_seq, room_type_seq, num_guests_adults, num_guests_children, room_view_seq, room_smoking_yn, room_booking_period_start, room_booking_period_end, created_by, updated_by)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, 1, 1)
-           RETURNING booking_room_map_seq`,
+             (booking_seq, room_seq, room_type_seq, num_guests_adults, num_guests_children, room_view_seq, room_smoking_yn, room_booking_period_start, room_booking_period_end, created_by, updated_by)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, 1, 1)
+             RETURNING booking_room_map_seq`,
             [
               bookingSeq,
               bookingRoom.roomSeq,
@@ -52,8 +52,8 @@ export class BookingRepository implements IBookingRepository {
             bookingRoom.roomCharges.map((charge) =>
               client.query(
                 `INSERT INTO t_booking_room_charge_map
-               (booking_room_map_seq, charge_desc, charge_amount, created_by, updated_by)
-               VALUES ($1, $2, $3, 1, 1)`,
+                 (booking_room_map_seq, charge_desc, charge_amount, created_by, updated_by)
+                 VALUES ($1, $2, $3, 1, 1)`,
                 [bookingRoomMapSeq, charge.chargeDesc, charge.chargeAmount]
               )
             )
@@ -62,6 +62,7 @@ export class BookingRepository implements IBookingRepository {
       );
 
       await client.query("COMMIT");
+      return bookingResult.rows[0].booking_seq;
     } catch (err) {
       await client.query("ROLLBACK");
       throw err;
@@ -143,10 +144,10 @@ export class BookingRepository implements IBookingRepository {
 
   async findByGuest(guestSeq: number): Promise<BookingResultDTO[]> {
     const bookingsResult = await pool.query(
-      `SELECT booking_seq, booking_id, booking_period_start, booking_period_end, remarks, booking_status
-     FROM t_booking
-     WHERE active_flag = TRUE AND guest_seq = $1
-     ORDER BY booking_period_start ASC`,
+      `SELECT booking_seq, booking_id, booking_period_start, booking_period_end, booking_remarks, booking_status
+       FROM t_booking
+       WHERE active_flag = TRUE AND guest_seq = $1
+       ORDER BY booking_period_start ASC`,
       [guestSeq]
     );
 
@@ -156,9 +157,9 @@ export class BookingRepository implements IBookingRepository {
       const roomsResult = await pool.query(
         `SELECT booking_room_map_seq, room_type_seq, num_guests_adults, num_guests_children,
               room_view_seq, room_smoking_yn
-       FROM t_booking_room_map
-       WHERE active_flag = TRUE AND booking_seq = $1
-       ORDER BY booking_room_map_seq ASC`,
+         FROM t_booking_room_map
+         WHERE active_flag = TRUE AND booking_seq = $1
+         ORDER BY booking_room_map_seq ASC`,
         [row.booking_seq]
       );
 
@@ -166,9 +167,9 @@ export class BookingRepository implements IBookingRepository {
         roomsResult.rows.map(async (r) => {
           const chargesResult = await pool.query(
             `SELECT charge_desc, charge_amount
-           FROM t_booking_room_charge_map
-           WHERE active_flag = TRUE AND booking_room_map_seq = $1
-           ORDER BY booking_room_charge_map_seq ASC`,
+             FROM t_booking_room_charge_map
+             WHERE active_flag = TRUE AND booking_room_map_seq = $1
+             ORDER BY booking_room_charge_map_seq ASC`,
             [r.booking_room_map_seq]
           );
 

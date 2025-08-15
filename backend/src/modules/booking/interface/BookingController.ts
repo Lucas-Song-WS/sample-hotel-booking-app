@@ -1,11 +1,14 @@
 import { Request, Response } from "express";
 import { BookingService } from "../application/BookingService";
 import { BookingSaveDTO } from "../domain/dto/BookingSaveDTO";
+import { BookingResultDTO } from "../domain/dto/BookingResultDTO";
+
+type ErrorResponse = { error: string };
 
 export class BookingController {
   constructor(private bookingService: BookingService) {}
 
-  async create(req: Request<{}, {}, BookingSaveDTO>, res: Response) {
+  async create(req: Request<{}, {}, BookingSaveDTO>, res: Response<BookingResultDTO | ErrorResponse>) {
     try {
       const { guestSeq, start, end, rooms, remarks } = req.body;
 
@@ -23,7 +26,7 @@ export class BookingController {
     }
   }
 
-  async getBookings(req: Request, res: Response) {
+  async getBookings(req: Request, res: Response<BookingResultDTO[] | ErrorResponse>) {
     const guestSeq = Number(req.params.guestSeq);
     if (isNaN(guestSeq))
       return res.status(400).json({ error: "Invalid guestSeq" });
