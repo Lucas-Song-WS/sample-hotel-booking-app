@@ -8,7 +8,12 @@ const bookingService = new BookingService(bookingRepository);
 const bookingController = new BookingController(bookingService);
 
 const router = Router();
-router.post("/create", (req, res) => bookingController.create(req, res));
-router.get("/my-bookings/:guestSeq", (req, res) => bookingController.getBookings(req, res));
+router.post("/create", (req, res) => bookingController.createBooking(req, res));
+router.post("/preview", (req, res) =>
+  bookingController.previewBooking(req, res)
+);
+router.get("/my-bookings/:guestSeq", (req, res) =>
+  bookingController.getBookings(req, res)
+);
 
 export default router;
