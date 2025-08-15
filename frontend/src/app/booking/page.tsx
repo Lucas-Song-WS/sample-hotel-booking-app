@@ -1,125 +1,81 @@
 "use client";
 
-import Select from "@/components/Select";
-import CheckboxGroup from "@/components/CheckboxGroup";
+import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import RoomSearchForm from "./components/RoomSearchForm";
 import { RoomSearchDTO } from "@/domain/dto/RoomSearchDTO";
-import { useAtom } from "jotai";
-import { roomSearchAtom } from "./context";
+import RoomCard from "./components/RoomCard";
+import { RoomResultDTO } from "@/domain/dto/RoomResultDTO";
 
-interface RoomSearchFormProps {
-  onSearch: (dto: RoomSearchDTO) => void;
+function serializeDates(dto: RoomSearchDTO) {
+  const params = new URLSearchParams();
+  params.append("start", dto.start.toISOString().substring(0, 10));
+  params.append("end", dto.end.toISOString().substring(0, 10));
+
+  if (dto.roomTypeSeq) params.append("roomTypeSeq", dto.roomTypeSeq.toString());
+  if (dto.roomBedSeqList?.length)
+    dto.roomBedSeqList.forEach((bed) =>
+      params.append("roomBedSeqList", bed.toString())
+    );
+  if (dto.tagSeq) params.append("tagSeq", dto.tagSeq.toString());
+  if (dto.limit) params.append("limit", dto.limit.toString());
+  if (dto.offset) params.append("offset", dto.offset.toString());
+
+  return params.toString();
 }
 
-export default function RoomSearchForm({ onSearch }: RoomSearchFormProps) {
-  const [form, setForm] = useAtom(roomSearchAtom);
+async function fetchRooms(dto: RoomSearchDTO) {
+  const query = serializeDates(dto);
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/rooms/search?${query}`
+  );
+  if (!res.ok) throw new Error("Failed to fetch rooms");
+  return res.json();
+}
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSearch(form);
+export default function RoomSearchPage() {
+  const [searchParams, setSearchParams] = useState<RoomSearchDTO | null>(null);
+
+  const { data, isLoading, isError, refetch } = useQuery<RoomResultDTO[]>({
+    queryKey: ["rooms", searchParams],
+    queryFn: () => fetchRooms(searchParams!),
+    enabled: false,
+  });
+
+  useEffect(() => {
+    if (searchParams) {
+      refetch();
+    }
+  }, [searchParams, refetch]);
+
+  const handleSearch = (dto: RoomSearchDTO) => {
+    setSearchParams(dto);
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="bg-white shadow-md rounded-md p-6 grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
-    >
-      {/* Start Date */}
-      <div className="flex flex-col">
-        <label className="mb-1 font-medium">Start Date</label>
-        <input
-          type="date"
-          value={form.start.toISOString().substring(0, 10)}
-          onChange={(e) =>
-            setForm((prev) => ({ ...prev, start: new Date(e.target.value) }))
-          }
-          className="border px-3 py-2 rounded"
-        />
-      </div>
+    <div className="p-6">
+      <RoomSearchForm onSearch={handleSearch} />
 
-      {/* End Date */}
-      <div className="flex flex-col">
-        <label className="mb-1 font-medium">End Date</label>
-        <input
-          type="date"
-          value={form.end.toISOString().substring(0, 10)}
-          onChange={(e) =>
-            setForm((prev) => ({ ...prev, end: new Date(e.target.value) }))
-          }
-          className="border px-3 py-2 rounded"
-        />
-      </div>
+      {isLoading && <p>Loading rooms...</p>}
+      {isError && <p className="text-red-500">Error fetching rooms.</p>}
 
-      {/* Room Type */}
-      <div className="flex flex-col">
-        <label className="mb-1 font-medium">Room Type</label>
-        <Select
-          className="border px-3 py-2 rounded"
-          endpoint="/common/room-types"
-          value={form.roomTypeSeq}
-          onChange={(val) => setForm((prev) => ({ ...prev, roomTypeSeq: val }))}
-          placeholder="Any"
-        />
-      </div>
+      <div className="flex gap-4">
+        <div className="flex-1 space-y-4">
+          {data && data.length === 0 && <p>No rooms found.</p>}
+          {data &&
+            data.map((room) => <RoomCard key={room.roomTypeSeq} room={room} />)}
+        </div>
 
-      {/* Beds (dynamic checkboxes) */}
-      <div className="flex flex-col">
-        <label className="mb-1 font-medium">Beds</label>
-        <CheckboxGroup
-          endpoint="/common/room-beds"
-          value={form.roomBedSeqList}
-          onChange={(val) => setForm((prev) => ({ ...prev, roomBedSeqList: val }))}
-        />
+        <div className="w-64 p-4 border rounded-lg shadow">
+          <h3 className="font-semibold text-lg mb-2">Grand Total</h3>
+          <p className="text-xl font-bold">
+            $
+            {data
+              ? data.reduce((sum, r) => sum + r.totalPrice, 0).toFixed(2)
+              : "0.00"}
+          </p>
+        </div>
       </div>
-
-      {/* Tag */}
-      <div className="flex flex-col">
-        <label className="mb-1 font-medium">Tag</label>
-        <Select
-          className="border px-3 py-2 rounded"
-          endpoint="/common/tags"
-          value={form.tagSeq}
-          onChange={(val) => setForm((prev) => ({ ...prev, tagSeq: val }))}
-          placeholder="Any"
-        />
-      </div>
-
-      {/* Limit */}
-      <div className="flex flex-col">
-        <label className="mb-1 font-medium">Limit</label>
-        <input
-          type="number"
-          min={1}
-          value={form.limit}
-          onChange={(e) =>
-            setForm((prev) => ({ ...prev, limit: Number(e.target.value) }))
-          }
-          className="border px-3 py-2 rounded"
-        />
-      </div>
-
-      {/* Offset */}
-      <div className="flex flex-col">
-        <label className="mb-1 font-medium">Offset</label>
-        <input
-          type="number"
-          min={0}
-          value={form.offset}
-          onChange={(e) =>
-            setForm((prev) => ({ ...prev, offset: Number(e.target.value) }))
-          }
-          className="border px-3 py-2 rounded"
-        />
-      </div>
-
-      {/* Submit */}
-      <div className="flex items-end">
-        <button
-          type="submit"
-          className="px-4 py-2 bg-gold text-black font-medium hover:bg-black hover:text-gold transition rounded"
-        >
-          Search
-        </button>
-      </div>
-    </form>
+    </div>
   );
 }
