@@ -1,7 +1,7 @@
 import { config } from "../../../config";
 import { RoomSearchDTO } from "../domain/dto/RoomSearchDTO";
 import { RoomResultDTO } from "../domain/dto/RoomResultDTO";
-import { IRoomRepository } from "../repository/IRoomRepository";
+import { IRoomRepository } from "./IRoomRepository";
 
 const { pool } = config.db;
 

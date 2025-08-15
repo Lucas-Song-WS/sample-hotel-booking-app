@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { RoomRepository } from "../infrastructure/RoomRepository";
-import { RoomService } from "../application/RoomService";
+import { RoomRepository } from "../repository/RoomRepository";
+import { RoomService } from "../service/RoomService";
 import { RoomController } from "./RoomController";
 
 const roomRepository = new RoomRepository();
