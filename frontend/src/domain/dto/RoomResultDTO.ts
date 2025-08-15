@@ -12,6 +12,9 @@ export interface RoomResultDTO {
   }[];
   smokingAvailable: boolean;
   nonsmokingAvailable: boolean;
-  views: string[];
+  views: {
+    viewSeq: number;
+    viewName: string;
+  }[];
   totalPrice: number;
 }
