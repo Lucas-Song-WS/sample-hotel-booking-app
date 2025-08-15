@@ -384,7 +384,7 @@ $$ LANGUAGE plpgsql;
 
 INSERT INTO t_staff (staff_username, staff_password, staff_id_no, staff_name, staff_email, staff_phone, staff_dob, created_by, updated_by)
 VALUES
-('hotelmann', MD5('hotelmann'), '990919099999', 'Ho Tel Mann', 'hotelmann@hotel.com', '+60198765432', '1999-09-19', 1, 1);
+('hotelmann', MD5('hotelmann'), '990919099999', 'Ho Tel Mann', 'hotelmann@myhotel.com', '+60198765432', '1999-09-19', 1, 1);
 
 INSERT INTO t_guest (guest_username, guest_password, guest_id_no, guest_name, guest_email, guest_phone, guest_dob, created_by, updated_by)
 VALUES
