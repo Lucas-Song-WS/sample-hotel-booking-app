@@ -1,4 +1,4 @@
-import { IBookingRepository } from "../repository/IBookingRepository";
+import { IBookingRepository } from "./IBookingRepository";
 import { Booking } from "../domain/entities/Booking";
 import { config } from "../../../config";
 import { BookingResultDTO } from "../domain/dto/BookingResultDTO";
