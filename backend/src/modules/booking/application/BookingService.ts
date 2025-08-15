@@ -61,7 +61,8 @@ export class BookingService {
     );
 
     booking.validate();
-    await this.bookingRepo.save(booking);
+    const bookingSeq = await this.bookingRepo.save(booking);
+    booking.receiveBookingConfirmation(bookingSeq);
 
     return booking.toDTO();
   }

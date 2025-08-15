@@ -5,6 +5,7 @@ import { BookingRoom } from "./BookingRoom";
 
 export class Booking {
   private _bookingRooms: BookingRoom[] = [];
+  private _status: string = "N/A";
 
   private constructor(
     private _bookingSeq: number | null,
@@ -35,6 +36,11 @@ export class Booking {
     );
   }
 
+  receiveBookingConfirmation(bookingSeq: number) {
+    this._bookingSeq = bookingSeq;
+    this._status = "CONFIRMED";
+  }
+
   addBookingRoom(
     roomTypeSeq: number,
     numAdults: number,
@@ -55,9 +61,8 @@ export class Booking {
   }
 
   validate(): void {
-    if (this._bookingRooms.length === 0) {
+    if (this._bookingRooms.length === 0)
       throw new Error("Booking must have at least one room");
-    }
   }
 
   toDTO(): BookingResultDTO {
@@ -67,7 +72,7 @@ export class Booking {
       start: this.bookingPeriod.start.toISOString(),
       end: this.bookingPeriod.end.toISOString(),
       remarks: this.remarks ?? "",
-      status: "CONFIRMED",
+      status: this.status,
       rooms: this.bookingRooms.map((r) => r.toDTO()),
     };
   }
@@ -89,5 +94,8 @@ export class Booking {
   }
   get bookingRooms() {
     return this._bookingRooms;
+  }
+  get status() {
+    return this._status;
   }
 }
