@@ -1,5 +1,7 @@
-import { CommonRoomTypeDTO } from "../domain/dto/CommonRoomTypeDTO";
+import { SelectionDTO } from "../domain/dto/CommonDTO";
 
 export interface ICommonRepository {
-  getRoomTypes(): Promise<CommonRoomTypeDTO[]>;
+  getRoomTypes(): Promise<SelectionDTO[]>;
+  getRoomBeds(): Promise<SelectionDTO[]>;
+  getTags(): Promise<SelectionDTO[]>
 }
