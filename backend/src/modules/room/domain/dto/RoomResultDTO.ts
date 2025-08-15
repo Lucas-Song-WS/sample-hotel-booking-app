@@ -4,11 +4,11 @@ export interface RoomResultDTO {
   roomTypeDesc: string;
   roomTypeMaxOccupancy: number;
   beds: {
-    bed_name: string;
-    bed_qty: number;
+    bedName: string;
+    bedQty: number;
   }[];
   amenities: {
-    amenity_name: string;
+    amenityName: string;
   }[];
   smokingAvailable: boolean;
   nonsmokingAvailable: boolean;
