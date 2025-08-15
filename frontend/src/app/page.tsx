@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import router from "next/router";
 
 export default function Home() {
   return (
@@ -23,7 +24,10 @@ export default function Home() {
               tincidunt, nisl eget mattis facilisis, nunc est elementum massa, a
               ultricies nibh mauris id lectus.
             </p>
-            <button className="px-8 py-3 bg-gold text-black font-medium hover:bg-black hover:text-gold transition border border-gold">
+            <button
+              className="px-8 py-3 bg-gold text-black font-medium hover:bg-black hover:text-gold transition border border-gold"
+              onClick={() => router.push("/booking")}
+            >
               BOOK NOW
             </button>
           </div>

@@ -4,6 +4,7 @@ import { ReactNode, useState } from "react";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/lib/react-query";
 import "@/styles/globals.css";
+import router from "next/router";
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -32,7 +33,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               </div>
 
               <div className="flex items-center gap-4">
-                <button className="px-5 py-2 bg-gold text-black font-medium hover:bg-black hover:text-gold border border-gold transition">
+                <button
+                  className="px-5 py-2 bg-gold text-black font-medium hover:bg-black hover:text-gold border border-gold transition"
+                  onClick={() => router.push("/booking")}
+                >
                   BOOK NOW
                 </button>
                 <button
