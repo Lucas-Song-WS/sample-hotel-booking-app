@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { BookingService } from "../application/BookingService";
+import { BookingService } from "../service/BookingService";
 import { BookingSaveDTO } from "../domain/dto/BookingSaveDTO";
 import { BookingResultDTO } from "../domain/dto/BookingResultDTO";
 

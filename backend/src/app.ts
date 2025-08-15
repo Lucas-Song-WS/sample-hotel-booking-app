@@ -1,8 +1,8 @@
 import express, { Application, Request, Response } from "express";
 import cors from "cors";
-import testDbRouter from "./routes/testDb";
-import bookingRouter from "./modules/booking/interface/router";
-import roomRouter from "./modules/room/interface/router";
+import commonRouter from "./modules/common/controller/router";
+import bookingRouter from "./modules/booking/controller/router";
+import roomRouter from "./modules/room/controller/router";
 
 export const createApp = (): Application => {
   const app = express();
@@ -14,8 +14,7 @@ export const createApp = (): Application => {
     res.json({ status: "ok" });
   });
 
-  app.use("/api/test_db", testDbRouter);
-
+  app.use("/api/common", commonRouter);
   app.use("/api/rooms", roomRouter);
   app.use("/api/booking", bookingRouter);
 

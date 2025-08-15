@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { RoomService } from "../application/RoomService";
+import { RoomService } from "../service/RoomService";
 import { RoomSearchDTO } from "../domain/dto/RoomSearchDTO";
 import { RoomResultDTO } from "../domain/dto/RoomResultDTO";
 
