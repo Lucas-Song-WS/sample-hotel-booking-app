@@ -4,10 +4,21 @@ import { BookingResultDTO } from "../domain/dto/BookingResultDTO";
 import { BookingRoom } from "../domain/entities/BookingRoom";
 import { RoomCharge } from "../domain/value-objects/RoomCharge";
 
+interface BookingRoomInput {
+  roomTypeSeq: number;
+  numAdults: number;
+  numChildren?: number;
+  roomViewSeq?: number;
+  roomSmokingYn?: boolean;
+  additionalCharges?: {
+    chargeSeq: number;
+  }[];
+}
+
 export class BookingService {
   constructor(private bookingRepo: IBookingRepository) {}
 
-  async createBooking(
+  async buildBooking(
     guestSeq: number,
     start: Date,
     end: Date,
@@ -22,7 +33,7 @@ export class BookingService {
       }[];
     }[],
     remarks?: string
-  ): Promise<BookingResultDTO> {
+  ): Promise<Booking> {
     const booking = Booking.create(guestSeq, start, end, remarks);
 
     await Promise.all(
@@ -60,9 +71,43 @@ export class BookingService {
       })
     );
 
+    return booking;
+  }
+
+  async createBooking(
+    guestSeq: number,
+    start: Date,
+    end: Date,
+    rooms: BookingRoomInput[],
+    remarks?: string
+  ): Promise<BookingResultDTO> {
+    const booking = await this.buildBooking(
+      guestSeq,
+      start,
+      end,
+      rooms,
+      remarks
+    );
+
     booking.validate();
     const bookingSeq = await this.bookingRepo.save(booking);
     booking.receiveBookingConfirmation(bookingSeq);
+
+    return booking.toDTO();
+  }
+
+  async previewBooking(
+    guestSeq: number,
+    start: Date,
+    end: Date,
+    rooms: BookingRoomInput[],
+  ): Promise<BookingResultDTO> {
+    const booking = await this.buildBooking(
+      guestSeq,
+      start,
+      end,
+      rooms,
+    );
 
     return booking.toDTO();
   }
