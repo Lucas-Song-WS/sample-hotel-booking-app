@@ -1,4 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Inter:wght@400;500&display=swap');
+
 /* postcss */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --color-gold: #c9a227;
+  --color-offwhite: #faf8f5;
+}
