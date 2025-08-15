@@ -14,14 +14,15 @@ export class BookingRepository implements IBookingRepository {
     try {
       await client.query("BEGIN");
       const bookingResult = await pool.query(
-        `INSERT INTO t_booking (booking_id, guest_seq, booking_period_start, booking_period_end, booking_status, created_by, updated_by)
-         VALUES ($1, $2, $3, $4, 'CONFIRMED', 1, 1)
+        `INSERT INTO t_booking (booking_id, guest_seq, booking_period_start, booking_period_end, booking_remarks, booking_status, created_by, updated_by)
+         VALUES ($1, $2, $3, $4, $5, 'CONFIRMED', 1, 1)
          RETURNING booking_seq`,
         [
           booking.bookingId,
           booking.guestSeq,
           booking.bookingPeriod.start,
           booking.bookingPeriod.end,
+          booking.remarks,
         ]
       );
 
@@ -143,60 +144,71 @@ export class BookingRepository implements IBookingRepository {
   }
 
   async findByGuest(guestSeq: number): Promise<BookingResultDTO[]> {
-    const bookingsResult = await pool.query(
-      `SELECT booking_seq, booking_id, booking_period_start, booking_period_end, booking_remarks, booking_status
-       FROM t_booking
-       WHERE active_flag = TRUE AND guest_seq = $1
-       ORDER BY booking_period_start ASC`,
+    const result = await pool.query(
+      `SELECT b.booking_seq, b.booking_id, b.booking_period_start, b.booking_period_end, b.booking_remarks, b.booking_status,
+         brm.booking_room_map_seq, brm.room_type_seq, brm.num_guests_adults, brm.num_guests_children, brm.room_view_seq, brm.room_smoking_yn,
+         brc.charge_desc, brc.charge_amount
+       FROM t_booking b
+       INNER JOIN t_booking_room_map brm ON brm.booking_seq = b.booking_seq
+       INNER JOIN t_booking_room_charge_map brc ON brc.booking_room_map_seq = brm.booking_room_map_seq 
+       WHERE b.active_flag = TRUE AND brm.active_flag = TRUE AND brc.active_flag = TRUE AND b.guest_seq = $1
+       ORDER BY b.booking_period_start DESC, brm.booking_room_map_seq ASC, brc.booking_room_charge_map_seq ASC`,
       [guestSeq]
     );
 
-    const bookings: BookingResultDTO[] = [];
+    const bookingsMap = new Map<number, BookingResultDTO>();
+    const roomsMap = new Map<
+      number,
+      Map<number, BookingResultDTO["rooms"][number]>
+    >();
 
-    for (const row of bookingsResult.rows) {
-      const roomsResult = await pool.query(
-        `SELECT booking_room_map_seq, room_type_seq, num_guests_adults, num_guests_children,
-              room_view_seq, room_smoking_yn
-         FROM t_booking_room_map
-         WHERE active_flag = TRUE AND booking_seq = $1
-         ORDER BY booking_room_map_seq ASC`,
-        [row.booking_seq]
-      );
+    for (const row of result.rows) {
+      if (!bookingsMap.has(row.booking_seq)) {
+        bookingsMap.set(row.booking_seq, {
+          bookingSeq: row.booking_seq,
+          bookingId: row.booking_id,
+          start: row.booking_period_start.toISOString(),
+          end: row.booking_period_end.toISOString(),
+          remarks: row.booking_remarks,
+          status: row.booking_status,
+          rooms: [],
+        });
+        roomsMap.set(row.booking_seq, new Map());
+      }
 
-      const rooms = await Promise.all(
-        roomsResult.rows.map(async (r) => {
-          const chargesResult = await pool.query(
-            `SELECT charge_desc, charge_amount
-             FROM t_booking_room_charge_map
-             WHERE active_flag = TRUE AND booking_room_map_seq = $1
-             ORDER BY booking_room_charge_map_seq ASC`,
-            [r.booking_room_map_seq]
-          );
+      const bookingRooms = roomsMap.get(row.booking_seq)!;
 
-          return {
-            roomTypeSeq: r.room_type_seq,
-            numAdults: r.num_guests_adults,
-            numChildren: r.num_guests_children ?? 0,
-            roomViewSeq: r.room_view_seq ?? null,
-            roomSmokingYn: r.room_smoking_yn ?? false,
-            charges: chargesResult.rows.map((c) => ({
-              chargeDesc: c.charge_desc,
-              chargeAmount: Number(c.charge_amount),
-            })),
-          };
-        })
-      );
+      if (
+        row.booking_room_map_seq != null &&
+        !bookingRooms.has(row.booking_room_map_seq)
+      ) {
+        bookingRooms.set(row.booking_room_map_seq, {
+          roomTypeSeq: row.room_type_seq,
+          numAdults: row.num_guests_adults,
+          numChildren: row.num_guests_children ?? 0,
+          roomViewSeq: row.room_view_seq ?? null,
+          roomSmokingYn: row.room_smoking_yn ?? false,
+          charges: [],
+        });
+      }
 
-      bookings.push({
-        bookingSeq: row.booking_seq,
-        bookingId: row.booking_id,
-        start: row.booking_period_start.toISOString(),
-        end: row.booking_period_end.toISOString(),
-        remarks: row.remarks,
-        status: row.booking_status,
-        rooms,
-      });
+      if (row.booking_room_map_seq != null && row.charge_desc != null) {
+        bookingRooms.get(row.booking_room_map_seq)!.charges.push({
+          chargeDesc: row.charge_desc,
+          chargeAmount: Number(row.charge_amount),
+        });
+      }
     }
+
+    const bookings: BookingResultDTO[] = Array.from(bookingsMap.values()).map(
+      (b) => {
+        const bookingRooms = roomsMap.get(b.bookingSeq)!;
+        return {
+          ...b,
+          rooms: Array.from(bookingRooms.values()),
+        };
+      }
+    );
 
     return bookings;
   }

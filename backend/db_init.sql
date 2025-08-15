@@ -302,7 +302,7 @@ CREATE INDEX idx_t_tag_map_room_type_seq ON t_tag_map(room_type_seq);
 CREATE INDEX idx_t_tag_map_charge_seq ON t_tag_map(charge_seq);
 
 CREATE OR REPLACE FUNCTION Get_Occupied_Rooms(p_start_date DATE, p_end_date DATE)
-RETURNS TABLE(room_seq INTEGER) AS $$
+RETURNS TABLE(room_seq BIGINT) AS $$
     SELECT DISTINCT room_seq
     FROM t_booking_room_map
     WHERE active_flag = TRUE
@@ -317,9 +317,9 @@ RETURNS NUMERIC AS $$
 $$ LANGUAGE sql;
 
 CREATE OR REPLACE FUNCTION Calc_Room_Day_Charge(
-    p_room_type_seq INTEGER,
-    p_room_view_seq INTEGER,
-    p_room_seq INTEGER,
+    p_room_type_seq BIGINT,
+    p_room_view_seq BIGINT,
+    p_room_seq BIGINT,
     p_date DATE
 )
 RETURNS NUMERIC AS $$
@@ -337,29 +337,33 @@ BEGIN
     WHERE room_type_seq = p_room_type_seq AND price_period_start <= p_date AND price_period_end >= p_date
     ORDER BY price_period_start DESC LIMIT 1;
 
+    IF p_room_view_seq IS NOT NULL AND p_room_view_seq > 0 THEN
     SELECT room_view_price INTO v_view_charge
     FROM t_room_view_price
     WHERE room_view_seq = p_room_view_seq AND price_period_start <= p_date AND price_period_end >= p_date
     ORDER BY price_period_start DESC LIMIT 1;
+    END IF;
 
+    IF p_room_seq IS NOT NULL AND p_room_seq > 0 THEN
     SELECT room_price_adjustment INTO v_adj_charge
     FROM t_room_price_adjustment
     WHERE room_seq = p_room_seq AND price_adjustment_period_start <= p_date AND price_adjustment_period_end >= p_date
     ORDER BY price_adjustment_period_start DESC LIMIT 1;
+    END IF;
 
     SELECT season_price_adjustment INTO v_season_charge
     FROM t_season_price_adjustment
     WHERE max_occupancy_percent >= v_occupancy_percent AND price_adjustment_period_start <= p_date AND price_adjustment_period_end >= p_date
-    ORDER BY price_adjustment_period_start DESC, max_occupancy_percent DESC LIMIT 1;
+    ORDER BY price_adjustment_period_start DESC, max_occupancy_percent ASC LIMIT 1;
 
     RETURN COALESCE(v_type_charge, 0) + COALESCE(v_view_charge, 0) + COALESCE(v_adj_charge, 0) + COALESCE(v_season_charge, 0);
 END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION Calc_Room_Total_Charge(
-    p_room_type_seq INTEGER,
-    p_room_view_seq INTEGER,
-    p_room_seq INTEGER,
+    p_room_type_seq BIGINT,
+    p_room_view_seq BIGINT,
+    p_room_seq BIGINT,
     p_start_date DATE,
     p_end_date DATE
 )
