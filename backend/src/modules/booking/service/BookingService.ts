@@ -3,6 +3,7 @@ import { Booking } from "../domain/entities/Booking";
 import { BookingResultDTO } from "../domain/dto/BookingResultDTO";
 import { BookingRoom } from "../domain/entities/BookingRoom";
 import { RoomCharge } from "../domain/value-objects/RoomCharge";
+import { RoomInfo } from "../domain/value-objects/RoomInfo";
 
 interface BookingRoomInput {
   roomTypeSeq: number;
@@ -46,7 +47,7 @@ export class BookingService {
           r.roomSmokingYn
         );
 
-        const [roomSeq, roomCharge, childDiscount, additionalCharges] =
+        const [roomInfo, roomCharge, childDiscount, additionalCharges] =
           await Promise.all([
             this.findAvailableRoom(bookingRoom),
             this.calculateRoomCharge(bookingRoom),
@@ -60,7 +61,7 @@ export class BookingService {
               : Promise.resolve([]),
           ]);
 
-        bookingRoom.assignRoom(roomSeq);
+        bookingRoom.assignRoom(roomInfo);
         bookingRoom.addCharge("Room", roomCharge);
 
         if (childDiscount) {
@@ -112,7 +113,7 @@ export class BookingService {
     return booking.toDTO();
   }
 
-  async findAvailableRoom(bookingRoom: BookingRoom): Promise<number> {
+  async findAvailableRoom(bookingRoom: BookingRoom): Promise<RoomInfo> {
     return this.bookingRepo.findAvailableRoom(bookingRoom);
   }
 

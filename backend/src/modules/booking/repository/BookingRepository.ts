@@ -4,6 +4,7 @@ import { config } from "../../../config";
 import { BookingResultDTO } from "../domain/dto/BookingResultDTO";
 import { BookingRoom } from "../domain/entities/BookingRoom";
 import { RoomCharge } from "../domain/value-objects/RoomCharge";
+import { RoomInfo } from "../domain/value-objects/RoomInfo";
 
 const { pool } = config.db;
 
@@ -72,18 +73,21 @@ export class BookingRepository implements IBookingRepository {
     }
   }
 
-  async findAvailableRoom(bookingRoom: BookingRoom): Promise<number> {
+  async findAvailableRoom(bookingRoom: BookingRoom): Promise<RoomInfo> {
     const roomResult = await pool.query(
-      `SELECT room_seq
-       FROM t_room WHERE active_flag = True 
-          AND room_type_seq = $1 
-          AND room_view_seq = $2 
-          AND ($3::BOOLEAN IS NULL OR room_smoking_yn = $3::BOOLEAN)
+      `SELECT r.room_seq, rt.room_type_name, rv.room_view_name
+       FROM t_room r
+       INNER JOIN t_room_type rt ON r.room_type_seq = rt.room_type_seq
+       INNER JOIN t_room_view rv ON r.room_view_seq = rv.room_view_seq
+       WHERE r.active_flag = True AND rt.active_flag = True AND rv.active_flag = True
+          AND r.room_type_seq = $1 
+          AND r.room_view_seq = $2 
+          AND ($3::BOOLEAN IS NULL OR r.room_smoking_yn = $3::BOOLEAN)
           AND NOT EXISTS (
               SELECT 1
               FROM Get_Occupied_Rooms($4, $5) occ
-              WHERE occ.room_seq = t_room.room_seq)
-       ORDER BY room_seq ASC
+              WHERE occ.room_seq = r.room_seq)
+       ORDER BY r.room_seq ASC
        LIMIT 1`,
       [
         bookingRoom.roomTypeSeq,
@@ -97,7 +101,11 @@ export class BookingRepository implements IBookingRepository {
     if (!roomResult.rows[0]) {
       throw new Error("No available room found");
     }
-    return roomResult.rows[0].room_seq;
+    return new RoomInfo(
+      roomResult.rows[0].room_seq,
+      roomResult.rows[0].room_type_name,
+      roomResult.rows[0].room_view_name
+    );
   }
 
   async calculateRoomCharge(bookingRoom: BookingRoom): Promise<number> {
@@ -146,12 +154,17 @@ export class BookingRepository implements IBookingRepository {
   async findByGuest(guestSeq: number): Promise<BookingResultDTO[]> {
     const result = await pool.query(
       `SELECT b.booking_seq, b.booking_id, b.booking_period_start, b.booking_period_end, b.booking_remarks, b.booking_status,
-         brm.booking_room_map_seq, brm.room_type_seq, brm.num_guests_adults, brm.num_guests_children, brm.room_view_seq, brm.room_smoking_yn,
+         brm.booking_room_map_seq, brm.room_type_seq, rt.room_type_name, brm.room_seq,
+         brm.num_guests_adults, brm.num_guests_children,
+         brm.room_view_seq, rv.room_view_name, brm.room_smoking_yn,
          brc.charge_desc, brc.charge_amount
        FROM t_booking b
        INNER JOIN t_booking_room_map brm ON brm.booking_seq = b.booking_seq
        INNER JOIN t_booking_room_charge_map brc ON brc.booking_room_map_seq = brm.booking_room_map_seq 
-       WHERE b.active_flag = TRUE AND brm.active_flag = TRUE AND brc.active_flag = TRUE AND b.guest_seq = $1
+       INNER JOIN t_room_type rt ON rt.room_type_seq = brm.room_type_seq
+       LEFT JOIN t_room_view rv ON rv.room_view_seq = brm.room_view_seq
+       WHERE b.active_flag = TRUE AND brm.active_flag = TRUE AND brc.active_flag = TRUE AND rt.active_flag = TRUE AND rv.active_flag = TRUE 
+         AND b.guest_seq = $1
        ORDER BY b.booking_period_start DESC, brm.booking_room_map_seq ASC, brc.booking_room_charge_map_seq ASC`,
       [guestSeq]
     );
@@ -184,9 +197,11 @@ export class BookingRepository implements IBookingRepository {
       ) {
         bookingRooms.set(row.booking_room_map_seq, {
           roomTypeSeq: row.room_type_seq,
+          roomTypeName: row.room_type_name,
           numAdults: row.num_guests_adults,
           numChildren: row.num_guests_children ?? 0,
           roomViewSeq: row.room_view_seq ?? null,
+          roomViewName: row.room_view_name ?? null,
           roomSmokingYn: row.room_smoking_yn ?? false,
           charges: [],
         });

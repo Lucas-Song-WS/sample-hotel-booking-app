@@ -1,7 +1,10 @@
 import { BookingPeriod } from "../value-objects/BookingPeriod";
 import { RoomCharge } from "../value-objects/RoomCharge";
+import { RoomInfo } from "../value-objects/RoomInfo";
 
 export class BookingRoom {
+  private _roomTypeName: string = "N/A";
+  private _roomViewName: string = "N/A";
   private _roomSeq: number = 0;
   private _roomCharges: RoomCharge[] = [];
 
@@ -35,9 +38,11 @@ export class BookingRoom {
     );
   }
 
-  assignRoom(roomSeq: number) {
-    if (!roomSeq) throw new Error("Must assign a room");
-    this._roomSeq = roomSeq;
+  assignRoom(roomInfo: RoomInfo) {
+    if (!roomInfo) throw new Error("Must assign a room");
+    this._roomSeq = roomInfo.roomSeq;
+    this._roomTypeName = roomInfo.roomTypeName;
+    this._roomViewName = roomInfo.roomViewName;
   }
 
   addCharge(chargeDesc: string, chargeAmount: number) {
@@ -57,9 +62,11 @@ export class BookingRoom {
   toDTO() {
     return {
       roomTypeSeq: this.roomTypeSeq,
+      roomTypeName: this.roomTypeName,
       numAdults: this.numAdults,
       numChildren: this.numChildren ?? 0,
       roomViewSeq: this.roomViewSeq,
+      roomViewName: this.roomViewName,
       roomSmokingYn: this.roomSmokingYn,
       charges: this.roomCharges.map((c) => ({
         chargeDesc: c.chargeDesc,
@@ -71,6 +78,9 @@ export class BookingRoom {
   get roomTypeSeq() {
     return this._roomTypeSeq;
   }
+  get roomTypeName() {
+    return this._roomTypeName;
+  }
   get numAdults() {
     return this._numAdults;
   }
@@ -79,6 +89,9 @@ export class BookingRoom {
   }
   get roomViewSeq() {
     return this._roomViewSeq;
+  }
+  get roomViewName() {
+    return this._roomViewName;
   }
   get bookingPeriod() {
     return this._bookingPeriod;
