@@ -1,123 +1,108 @@
 "use client";
 
+import { FormEvent } from "react";
+import { RoomSearchDTO } from "@/domain/dto/RoomSearchDTO";
 import Select from "@/components/Select";
 import CheckboxGroup from "@/components/CheckboxGroup";
-import { RoomSearchDTO } from "@/domain/dto/RoomSearchDTO";
-import { useAtom } from "jotai";
-import { roomSearchAtom } from "../context";
 
-interface RoomSearchFormProps {
-  onSearch: (dto: RoomSearchDTO) => void;
+interface Props {
+  preSearch: RoomSearchDTO;
+  setPreSearch: (dto: RoomSearchDTO) => void;
+  onSearch: () => void;
+  onReset?: () => void;
 }
 
-export default function RoomSearchForm({ onSearch }: RoomSearchFormProps) {
-  const [form, setForm] = useAtom(roomSearchAtom);
-
-  const handleSubmit = (e: React.FormEvent) => {
+export default function RoomSearchForm({
+  preSearch,
+  setPreSearch,
+  onSearch,
+  onReset,
+}: Props) {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    onSearch(form);
+    onSearch();
   };
 
   return (
     <form
-      onSubmit={handleSubmit}
-      className="bg-white shadow-md rounded-md p-6 grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+  onSubmit={handleSubmit}
+  className="flex flex-wrap gap-6 mb-8 items-end bg-white p-6 rounded-lg shadow border border-gold/30"
+>
+  <div className="flex flex-col">
+    <label className="block text-sm font-medium text-gray-800 mb-1">Start Date</label>
+    <input
+      type="date"
+      value={preSearch.start}
+      onChange={(e) =>
+        setPreSearch({ ...preSearch, start: e.target.value })
+      }
+      className="border border-gold/50 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gold transition"
+    />
+  </div>
+
+  <div className="flex flex-col">
+    <label className="block text-sm font-medium text-gray-800 mb-1">End Date</label>
+    <input
+      type="date"
+      value={preSearch.end}
+      onChange={(e) => setPreSearch({ ...preSearch, end: e.target.value })}
+      className="border border-gold/50 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gold transition"
+    />
+  </div>
+
+  <div className="flex flex-col">
+    <label className="block text-sm font-medium text-gray-800 mb-1">Room Type</label>
+    <Select
+      className="border border-gold/50 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gold transition"
+      endpoint="/common/room-types"
+      value={preSearch.roomTypeSeq}
+      onChange={(val) => setPreSearch({ ...preSearch, roomTypeSeq: val })}
+      placeholder="Any"
+    />
+  </div>
+
+  <div className="flex flex-col">
+    <label className="block text-sm font-medium text-gray-800 mb-1">Beds</label>
+    <CheckboxGroup
+      endpoint="/common/room-beds"
+      value={preSearch.roomBedSeqList}
+      onChange={(val) =>
+        setPreSearch({ ...preSearch, roomBedSeqList: val })
+      }
+    />
+  </div>
+
+  <div className="flex flex-col">
+    <label className="block text-sm font-medium text-gray-800 mb-1">Tag</label>
+    <Select
+      className="border border-gold/50 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gold transition"
+      endpoint="/common/tags"
+      value={preSearch.tagSeq}
+      onChange={(val) => setPreSearch({ ...preSearch, tagSeq: val })}
+      placeholder="Any"
+    />
+  </div>
+
+  <div className="flex gap-3 mt-2">
+    <button
+      type="submit"
+      className="px-6 py-2 bg-gold text-black font-medium rounded hover:bg-black hover:text-gold transition border border-gold"
     >
-      <div className="flex flex-col">
-        <label className="mb-1 font-medium">Start Date</label>
-        <input
-          type="date"
-          value={form.start.toISOString().substring(0, 10)}
-          onChange={(e) =>
-            setForm((prev) => ({
-              ...prev,
-              start: new Date(e.target.value),
-            }))
-          }
-        />
-      </div>
+      Search
+    </button>
 
-      <div className="flex flex-col">
-        <label className="mb-1 font-medium">End Date</label>
-        <input
-          type="date"
-          value={form.end.toISOString().substring(0, 10)}
-          onChange={(e) =>
-            setForm((prev) => ({
-              ...prev,
-              end: new Date(e.target.value),
-            }))
-          }
-        />
-      </div>
+    {onReset && (
+      <button
+        type="button"
+        onClick={onReset}
+        className="px-6 py-2 bg-gray-200 text-gray-900 rounded hover:bg-gray-300 transition border border-gray-300"
+      >
+        Reset
+      </button>
+    )}
+  </div>
+</form>
 
-      <div className="flex flex-col">
-        <label className="mb-1 font-medium">Room Type</label>
-        <Select
-          className="border px-3 py-2 rounded"
-          endpoint="/common/room-types"
-          value={form.roomTypeSeq}
-          onChange={(val) => setForm((prev) => ({ ...prev, roomTypeSeq: val }))}
-          placeholder="Any"
-        />
-      </div>
-
-      <div className="flex flex-col">
-        <label className="mb-1 font-medium">Beds</label>
-        <CheckboxGroup
-          endpoint="/common/room-beds"
-          value={form.roomBedSeqList}
-          onChange={(val) =>
-            setForm((prev) => ({ ...prev, roomBedSeqList: val }))
-          }
-        />
-      </div>
-
-      <div className="flex flex-col">
-        <label className="mb-1 font-medium">Tag</label>
-        <Select
-          className="border px-3 py-2 rounded"
-          endpoint="/common/tags"
-          value={form.tagSeq}
-          onChange={(val) => setForm((prev) => ({ ...prev, tagSeq: val }))}
-          placeholder="Any"
-        />
-      </div>
-
-      <div className="flex flex-col">
-        <label className="mb-1 font-medium">Limit</label>
-        <input
-          type="number"
-          min={1}
-          value={form.limit}
-          onChange={(e) =>
-            setForm((prev) => ({ ...prev, limit: Number(e.target.value) }))
-          }
-          className="border px-3 py-2 rounded"
-        />
-      </div>
-
-      <div className="flex flex-col">
-        <label className="mb-1 font-medium">Offset</label>
-        <input
-          type="number"
-          min={0}
-          value={form.offset}
-          onChange={(e) =>
-            setForm((prev) => ({ ...prev, offset: Number(e.target.value) }))
-          }
-          className="border px-3 py-2 rounded"
-        />
-      </div>
-
-      <div className="flex items-end">
-        <button
-          type="submit"
-          className="px-4 py-2 bg-gold text-black font-medium hover:bg-black hover:text-gold transition rounded"
-        >
-          Search
-        </button>
-      </div>
-    </form>
   );
 }
+ 
