@@ -37,6 +37,7 @@ CREATE TABLE t_room_type (
   room_type_name VARCHAR(30) NOT NULL,
   room_type_desc VARCHAR(200),
   room_type_max_occupancy INTEGER,
+  room_type_image_url VARCHAR(200),
   
   active_flag BOOLEAN NOT NULL DEFAULT True,
   created_by BIGINT NOT NULL,
@@ -391,13 +392,13 @@ VALUES
 ('hollyday', MD5('hollyday'), '000101111111', 'Holly Day', 'hollyday@email.com', '+60123456789', '2000-01-01', 1, 1),
 ('sambuddy', MD5('sambuddy'), '950607055555', 'Sam Buddy', 'sambuddy@email.com', '+60155555555', '1995-06-07', 1, 1);
 
-INSERT INTO t_room_type (room_type_name, room_type_desc, room_type_max_occupancy, created_by, updated_by)
+INSERT INTO t_room_type (room_type_name, room_type_desc, room_type_max_occupancy, room_type_image_url, created_by, updated_by)
 VALUES
-('Standard', 'Standard room', 2, 1, 1),
-('Deluxe', 'Deluxe room with extra amenities', 2, 1, 1),
-('Family', 'Large room for families', 4, 1, 1),
-('Suite', 'Luxury suite', 2, 1, 1),
-('Penthouse', 'Penthouse', 4, 1, 1);
+('Standard', 'Standard room', 2, 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85', 1, 1),
+('Deluxe', 'Deluxe room with extra amenities', 2, 'https://images.unsplash.com/photo-1631049552057-403cdb8f0658', 1, 1),
+('Family', 'Large room for families', 4, 'https://images.unsplash.com/photo-1667125095636-dce94dcbdd96', 1, 1),
+('Suite', 'Luxury suite', 2, 'https://images.unsplash.com/photo-1618773928121-c32242e63f39', 1, 1),
+('Penthouse', 'Penthouse', 4, 'https://images.unsplash.com/photo-1565623833408-d77e39b88af6', 1, 1);
 
 INSERT INTO t_room_type_price (room_type_seq, room_type_price, price_period_start, price_period_end, created_by, updated_by)
 VALUES

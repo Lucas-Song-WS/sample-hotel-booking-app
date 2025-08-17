@@ -13,7 +13,7 @@ export class RoomRepository implements IRoomRepository {
   ): Promise<RoomResultDTO[]> {
     const { rows } = await pool.query(
       `SELECT 
-         rt.room_type_seq, rt.room_type_name, rt.room_type_desc, rt.room_type_max_occupancy,
+         rt.room_type_seq, rt.room_type_name, rt.room_type_desc, rt.room_type_max_occupancy, rt.room_type_image_url,
          JSONB_AGG(DISTINCT JSONB_BUILD_OBJECT('bedName', rb.room_bed_name, 'bedQty', rtbm.room_type_bed_qty)) AS beds,
          JSONB_AGG(DISTINCT JSONB_BUILD_OBJECT('amenityName', ra.room_amenity_name)) AS amenities,
          BOOL_OR(r.room_smoking_yn) AS smoking_available, BOOL_OR(NOT r.room_smoking_yn) AS nonsmoking_available,
@@ -52,6 +52,7 @@ export class RoomRepository implements IRoomRepository {
       roomTypeName: row.room_type_name,
       roomTypeDesc: row.room_type_desc,
       roomTypeMaxOccupancy: row.room_type_max_occupancy,
+      roomTypeImageUrl: row.room_type_image_url,
       beds: row.beds || [],
       amenities: row.amenities || [],
       smokingAvailable: row.smoking_available,
