@@ -6,15 +6,24 @@ import { bookingPreviewAtom, selectedRoomsAtom } from "../context";
 import { BookingResultDTO } from "@/domain/dto/BookingResultDTO";
 import { RoomSearchDTO } from "@/domain/dto/RoomSearchDTO";
 import { createBooking } from "../api";
+import { useEffect } from "react";
 
 interface BookingCartProps {
   search: RoomSearchDTO;
 }
 
 export default function BookingCart({ search }: BookingCartProps) {
-  const [selectedRooms] = useAtom(selectedRoomsAtom);
-  const [bookingPreview] = useAtom<BookingResultDTO | null>(bookingPreviewAtom);
   const router = useRouter();
+
+  const [selectedRooms, setSelectedRooms] = useAtom(selectedRoomsAtom);
+  const [bookingPreview, setBookingPreview] = useAtom<BookingResultDTO | null>(
+    bookingPreviewAtom
+  );
+
+  useEffect(() => {
+    setSelectedRooms([]);
+    setBookingPreview(null);
+  }, [setSelectedRooms, setBookingPreview]);
 
   const grandTotal = bookingPreview
     ? bookingPreview.rooms.reduce((sum, room) => {
