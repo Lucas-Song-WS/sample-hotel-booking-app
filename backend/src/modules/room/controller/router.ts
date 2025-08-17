@@ -9,5 +9,6 @@ const roomController = new RoomController(roomService);
 
 const router = Router();
 router.get("/search", (req, res) => roomController.searchRooms(req, res));
+router.get("/search/pages", (req, res) => roomController.searchRoomsPages(req, res));
 
 export default router;

@@ -3,8 +3,6 @@ export interface RoomSearchDTO {
     end: Date;
     roomTypeSeq?: number;
     roomBedSeqList?: number[];
-    limit?: number;
-    offset?: number;
     tagSeq?: number;
     //priceRange?
 }

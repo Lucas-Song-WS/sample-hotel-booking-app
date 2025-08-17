@@ -2,11 +2,15 @@ import { config } from "../../../config";
 import { RoomSearchDTO } from "../domain/dto/RoomSearchDTO";
 import { RoomResultDTO } from "../domain/dto/RoomResultDTO";
 import { IRoomRepository } from "./IRoomRepository";
+import { PagesDTO, PaginationDTO } from "../../common/domain/dto/CommonDTO";
 
 const { pool } = config.db;
 
 export class RoomRepository implements IRoomRepository {
-  async searchRooms(search: RoomSearchDTO): Promise<RoomResultDTO[]> {
+  async searchRooms(
+    search: RoomSearchDTO,
+    pagination: PaginationDTO
+  ): Promise<RoomResultDTO[]> {
     const { rows } = await pool.query(
       `SELECT 
          rt.room_type_seq, rt.room_type_name, rt.room_type_desc, rt.room_type_max_occupancy,
@@ -38,8 +42,8 @@ export class RoomRepository implements IRoomRepository {
         search.end,
         search.roomTypeSeq,
         search.roomBedSeqList ? search.roomBedSeqList : null,
-        search.limit,
-        search.offset,
+        pagination.pageSize,
+        pagination.pageSize * (pagination.pageNumber - 1),
       ]
     );
 
@@ -55,5 +59,41 @@ export class RoomRepository implements IRoomRepository {
       views: row.views || [],
       totalPrice: Number(row.total_price),
     }));
+  }
+
+  async searchRoomsPages(
+    search: RoomSearchDTO,
+    pagination: PaginationDTO
+  ): Promise<PagesDTO> {
+    const { rows } = await pool.query(
+      `SELECT COUNT(DISTINCT rt.room_type_seq) AS total_records
+       FROM t_room r
+       INNER JOIN t_room_type rt ON r.room_type_seq = rt.room_type_seq
+       INNER JOIN t_room_type_bed_map rtbm ON rtbm.room_type_seq = rt.room_type_seq
+       INNER JOIN t_room_bed rb ON rb.room_bed_seq = rtbm.room_bed_seq
+       INNER JOIN t_room_view rv ON rv.room_view_seq = r.room_view_seq
+       LEFT JOIN t_room_type_amenity_map rtam ON rtam.room_type_seq = rt.room_type_seq
+       LEFT JOIN t_room_amenity ra ON ra.room_amenity_seq = rtam.room_amenity_seq
+       WHERE r.active_flag = TRUE AND rt.active_flag = TRUE AND rtbm.active_flag = TRUE AND rb.active_flag = TRUE AND rv.active_flag = TRUE
+         AND (rtam.room_type_amenity_map_seq IS NULL OR rtam.active_flag = TRUE) AND (ra.room_amenity_seq IS NULL OR ra.active_flag = TRUE)
+         AND NOT EXISTS (
+           SELECT 1 FROM Get_Occupied_Rooms($1, $2) occ 
+           WHERE occ.room_seq = r.room_seq
+         )
+         AND ($3::int IS NULL OR rt.room_type_seq = $3)
+         AND ($4::int[] IS NULL OR rb.room_bed_seq = ANY($4));`,
+      [
+        search.start,
+        search.end,
+        search.roomTypeSeq,
+        search.roomBedSeqList ? search.roomBedSeqList : null,
+      ]
+    );
+
+    return {
+      totalRecords: rows[0].total_records,
+      pageSize: pagination.pageSize,
+      totalPages: Math.ceil(rows[0].total_records / pagination.pageSize),
+    };
   }
 }
