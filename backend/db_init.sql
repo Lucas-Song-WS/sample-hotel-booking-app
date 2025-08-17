@@ -374,7 +374,7 @@ DECLARE
 BEGIN
     v_current_day := p_start_date;
     WHILE v_current_day <= p_end_date LOOP
-        v_total_charge := v_total_charge + Calc_Room_Day_Charge(p_room_type_seq,p_room_view_seq,p_room_seq,v_current_day);
+        v_total_charge := v_total_charge + Calc_Room_Day_Charge(p_room_type_seq, p_room_view_seq, p_room_seq, v_current_day);
         v_current_day := v_current_day + INTERVAL '1 day';
     END LOOP;
 
@@ -491,7 +491,8 @@ VALUES
 
 INSERT INTO t_season_price_adjustment (max_occupancy_percent, season_price_adjustment, price_adjustment_period_start, price_adjustment_period_end, created_by, updated_by)
 VALUES
-(0, -20, '2025-08-01', '2025-08-31', 1, 1),
+(0, -10, '2025-08-01', '2025-08-31', 1, 1),
+(20, -10, '2025-08-01', '2025-08-31', 1, 1),
 (50, 0, '2025-08-01', '2025-08-31', 1, 1),
 (80, 20, '2025-08-01', '2025-08-31', 1, 1),
 (100, 50, '2025-08-01', '2025-08-31', 1, 1);
