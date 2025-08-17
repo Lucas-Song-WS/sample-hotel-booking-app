@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import router from "next/router";
+import { redirect } from "next/navigation";
 
 export default function Home() {
   return (
@@ -26,7 +26,7 @@ export default function Home() {
             </p>
             <button
               className="px-8 py-3 bg-gold text-black font-medium hover:bg-black hover:text-gold transition border border-gold"
-              onClick={() => router.push("/booking")}
+              onClick={() => redirect("/booking")}
             >
               BOOK NOW
             </button>

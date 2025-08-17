@@ -4,7 +4,9 @@ import { BookingResultDTO } from "@/domain/dto/BookingResultDTO";
 import { useQuery } from "@tanstack/react-query";
 
 async function fetchMyBookings(): Promise<BookingResultDTO[]> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/booking/my-bookings/1`);
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/booking/my-bookings/1`
+  );
   if (!res.ok) {
     const text = await res.text();
     throw new Error(
@@ -24,7 +26,7 @@ export default function MyBookingsPage() {
   if (isError)
     return (
       <p className="text-red-500">
-        Error loading bookings:{" "}
+        Error loading bookings:
         {error instanceof Error ? error.message : String(error)}
       </p>
     );
@@ -45,7 +47,7 @@ export default function MyBookingsPage() {
               Booking ID: {booking.bookingId} ({booking.status})
             </h3>
             <p>
-              {new Date(booking.start).toLocaleDateString()} -{" "}
+              {new Date(booking.start).toLocaleDateString()} -
               {new Date(booking.end).toLocaleDateString()}
             </p>
             <p className="italic">{booking.remarks}</p>
