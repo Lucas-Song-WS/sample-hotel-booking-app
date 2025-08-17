@@ -11,7 +11,6 @@ export class RoomRepository implements IRoomRepository {
     search: RoomSearchDTO,
     pagination: PaginationDTO
   ): Promise<RoomResultDTO[]> {
-    console.log(pagination.sortField);
     const { rows } = await pool.query(
       `SELECT 
          rt.room_type_seq, rt.room_type_name, rt.room_type_desc, rt.room_type_max_occupancy, rt.room_type_image_url,
