@@ -36,13 +36,19 @@ export class RoomController {
         tagSeq: tagSeq ? Number(tagSeq) : undefined,
       };
 
-      console.log("pageNumber", pageNumber);
-      console.log("pageSize", pageSize);
+      type ExternalSortField = "roomTypeName" | "roomTypeMaxOccupancy";
+      const sortFieldMap: Record<ExternalSortField, string> = {
+        roomTypeName: "rt.room_type_name",
+        roomTypeMaxOccupancy: "rt.room_type_max_occupancy",
+      };
+      const tableSortField =
+        sortFieldMap[sortField as ExternalSortField] ?? "rt.room_type_seq";
+
       const pagination: PaginationDTO = {
         pageNumber: pageNumber ? Number(pageNumber) : 1,
         pageSize: pageSize ? Number(pageSize) : 10,
-        sortField,
-        sortDirection: sortDirection as "asc" | "desc",
+        sortField: tableSortField,
+        sortDirection: (sortDirection as "asc" | "desc") ?? "asc",
       };
 
       const searchResults = await this.service.searchRooms(

@@ -74,23 +74,23 @@ export default function RoomResults({
   return (
     <div className="">
       <div className="flex flex-wrap gap-3 mb-6">
+        <span className="px-2 py-1">Sort by:</span>{" "}
         <button
           onClick={() => toggleSort("roomTypeName")}
-          className={`px-4 py-2 border border-gold font-medium text-gray-800 hover:bg-gold hover:text-black transition ${
+          className={`px-2 py-1 border border-gold font-medium text-gray-800 hover:bg-gold hover:text-black transition ${
             pagination.sortField === "roomTypeName" ? "bg-gold text-black" : ""
           }`}
         >
-          Room Type
+          Room Type Name
           {pagination.sortField === "roomTypeName"
             ? pagination.sortDirection === "asc"
               ? "↑"
               : "↓"
             : ""}
         </button>
-
         <button
           onClick={() => toggleSort("roomTypeMaxOccupancy")}
-          className={`px-4 py-2 border border-gold font-medium text-gray-800 hover:bg-gold hover:text-black transition ${
+          className={`px-2 py-1 border border-gold font-medium text-gray-800 hover:bg-gold hover:text-black transition ${
             pagination.sortField === "roomTypeMaxOccupancy"
               ? "bg-gold text-black"
               : ""
