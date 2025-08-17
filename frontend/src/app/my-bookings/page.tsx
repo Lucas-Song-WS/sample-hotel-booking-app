@@ -47,19 +47,18 @@ export default function MyBookingsPage() {
               Booking ID: {booking.bookingId} ({booking.status})
             </h3>
             <p>
-              {new Date(booking.start).toLocaleDateString()} -
-              {new Date(booking.end).toLocaleDateString()}
+              {booking.start} - {booking.end}
             </p>
             <p className="italic">{booking.remarks}</p>
 
             <div className="mt-2 space-y-2">
               {booking.rooms.map((room, idx) => (
                 <div key={idx} className="p-2 border rounded">
-                  <p>Room Type Seq: {room.roomTypeSeq}</p>
+                  <p>Room Type: {room.roomTypeName}</p>
                   <p>
                     Adults: {room.numAdults}, Children: {room.numChildren}
                   </p>
-                  {room.roomViewSeq && <p>View Seq: {room.roomViewSeq}</p>}
+                  {room.roomViewSeq && <p>View: {room.roomViewName}</p>}
                   {room.roomSmokingYn !== undefined && (
                     <p>Smoking: {room.roomSmokingYn ? "Yes" : "No"}</p>
                   )}

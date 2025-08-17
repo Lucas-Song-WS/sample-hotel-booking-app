@@ -45,21 +45,21 @@ export default function RoomCard({ room, onAddRoom }: RoomCardProps) {
 
         <div className="mt-2 text-sm">
           <p>
-            <span className="font-medium">Max Occupancy:</span>{" "}
+            <span className="font-medium">Max Occupancy:</span>
             {room.roomTypeMaxOccupancy}
           </p>
           <p>
-            <span className="font-medium">Smoking:</span>{" "}
-            {room.smokingAvailable ? "Yes" : "No"} |{" "}
-            <span className="font-medium">Non-Smoking:</span>{" "}
+            <span className="font-medium">Smoking:</span>
+            {room.smokingAvailable ? "Yes" : "No"} |
+            <span className="font-medium">Non-Smoking:</span>
             {room.nonsmokingAvailable ? "Yes" : "No"}
           </p>
           <p>
-            <span className="font-medium">Beds:</span>{" "}
+            <span className="font-medium">Beds:</span>
             {room.beds.map((b) => `${b.bedQty}× ${b.bedName}`).join(", ")}
           </p>
           <p>
-            <span className="font-medium">Amenities:</span>{" "}
+            <span className="font-medium">Amenities:</span>
             {room.amenities.map((a) => a.amenityName).join(", ")}
           </p>
           <p className="mt-1 font-semibold">
@@ -75,22 +75,22 @@ export default function RoomCard({ room, onAddRoom }: RoomCardProps) {
 
           <div className="grid gap-4 mb-4 text-sm">
             <p>
-              <span className="font-medium">Max Occupancy:</span>{" "}
+              <span className="font-medium">Max Occupancy: </span>
               {room.roomTypeMaxOccupancy}
             </p>
             <p>
-              <span className="font-medium">Smoking:</span>{" "}
-              {room.smokingAvailable ? "Yes" : "No"} |{" "}
-              <span className="font-medium">Non-Smoking:</span>{" "}
-              {room.nonsmokingAvailable ? "Yes" : "No"}
-            </p>
-            <p>
-              <span className="font-medium">Beds:</span>{" "}
+              <span className="font-medium">Beds: </span>
               {room.beds.map((b) => `${b.bedQty}× ${b.bedName}`).join(", ")}
             </p>
             <p>
-              <span className="font-medium">Amenities:</span>{" "}
+              <span className="font-medium">Amenities: </span>
               {room.amenities.map((a) => a.amenityName).join(", ")}
+            </p>
+            <p>
+              <span className="font-medium">Smoking: </span>
+              {room.smokingAvailable ? "Yes" : "No"} |
+              <span className="font-medium">Non-Smoking: </span>
+              {room.nonsmokingAvailable ? "Yes" : "No"}
             </p>
           </div>
 
