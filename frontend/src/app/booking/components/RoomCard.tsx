@@ -4,10 +4,12 @@ import { Dialog } from "@/components/Dialog";
 import { RoomResultDTO } from "@/domain/dto/RoomResultDTO";
 import { BookingRoomDTO } from "../domain/dto/BookingRoom";
 import { initialBookingRoom } from "../context";
+
 interface RoomCardProps {
   room: RoomResultDTO;
   onAddRoom: (bookingRoom: BookingRoomDTO) => Promise<void>;
 }
+
 export default function RoomCard({ room, onAddRoom }: RoomCardProps) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -23,7 +25,7 @@ export default function RoomCard({ room, onAddRoom }: RoomCardProps) {
     setIsOpen(true);
   };
 
-  const handleConfirm = async () => {
+  const handleAddRoom = async () => {
     try {
       await onAddRoom(bookingRoom);
       setIsOpen(false);
@@ -40,13 +42,58 @@ export default function RoomCard({ room, onAddRoom }: RoomCardProps) {
       >
         <h2 className="text-lg font-semibold">{room.roomTypeName}</h2>
         <p className="text-sm text-gray-600">{room.roomTypeDesc}</p>
-        <p className="mt-2 font-semibold">
-          Total Price: ${room.totalPrice.toFixed(2)}
-        </p>
+
+        <div className="mt-2 text-sm">
+          <p>
+            <span className="font-medium">Max Occupancy:</span>{" "}
+            {room.roomTypeMaxOccupancy}
+          </p>
+          <p>
+            <span className="font-medium">Smoking:</span>{" "}
+            {room.smokingAvailable ? "Yes" : "No"} |{" "}
+            <span className="font-medium">Non-Smoking:</span>{" "}
+            {room.nonsmokingAvailable ? "Yes" : "No"}
+          </p>
+          <p>
+            <span className="font-medium">Beds:</span>{" "}
+            {room.beds.map((b) => `${b.bedQty}× ${b.bedName}`).join(", ")}
+          </p>
+          <p>
+            <span className="font-medium">Amenities:</span>{" "}
+            {room.amenities.map((a) => a.amenityName).join(", ")}
+          </p>
+          <p className="mt-1 font-semibold">
+            Total Price: RM{room.totalPrice.toFixed(2)}
+          </p>
+        </div>
       </div>
+
       {isOpen && (
         <Dialog open={isOpen} onClose={() => setIsOpen(false)}>
-          <h3 className="text-lg font-semibold mb-2">Add Room</h3>
+          <h3 className="text-lg font-semibold mb-2">{room.roomTypeName}</h3>
+          <p className="text-sm text-gray-600 mb-4">{room.roomTypeDesc}</p>
+
+          <div className="grid gap-4 mb-4 text-sm">
+            <p>
+              <span className="font-medium">Max Occupancy:</span>{" "}
+              {room.roomTypeMaxOccupancy}
+            </p>
+            <p>
+              <span className="font-medium">Smoking:</span>{" "}
+              {room.smokingAvailable ? "Yes" : "No"} |{" "}
+              <span className="font-medium">Non-Smoking:</span>{" "}
+              {room.nonsmokingAvailable ? "Yes" : "No"}
+            </p>
+            <p>
+              <span className="font-medium">Beds:</span>{" "}
+              {room.beds.map((b) => `${b.bedQty}× ${b.bedName}`).join(", ")}
+            </p>
+            <p>
+              <span className="font-medium">Amenities:</span>{" "}
+              {room.amenities.map((a) => a.amenityName).join(", ")}
+            </p>
+          </div>
+
           <div className="grid gap-4">
             <div>
               <label className="block font-medium">Number of Adults</label>
@@ -101,12 +148,13 @@ export default function RoomCard({ room, onAddRoom }: RoomCardProps) {
               </select>
             </div>
           </div>
+
           <div className="mt-4 flex justify-end">
             <button
-              onClick={handleConfirm}
+              onClick={handleAddRoom}
               className="px-4 py-2 bg-gold text-black font-medium hover:bg-black hover:text-gold transition rounded"
             >
-              Confirm
+              Add to Booking
             </button>
           </div>
         </Dialog>
