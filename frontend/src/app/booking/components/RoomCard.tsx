@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Dialog } from "@/components/Dialog";
 import { RoomResultDTO } from "@/domain/dto/RoomResultDTO";
 import { BookingRoomDTO } from "../domain/dto/BookingRoom";
@@ -20,6 +20,15 @@ export default function RoomCard({ room, onAddRoom }: RoomCardProps) {
     numAdults: 1,
   });
   const [bookingRoom, setBookingRoom] = useState(getInitialBookingRoom());
+
+  useEffect(() => {
+    if (!bookingRoom.roomViewSeq && room.views.length > 0) {
+      setBookingRoom((prev) => ({
+        ...prev,
+        roomViewSeq: room.views[0].viewSeq,
+      }));
+    }
+  }, [room.views, bookingRoom.roomViewSeq]);
 
   const handleOpen = () => {
     setBookingRoom(getInitialBookingRoom());
@@ -182,7 +191,6 @@ export default function RoomCard({ room, onAddRoom }: RoomCardProps) {
                     }
                     className="w-full border border-gold/50 px-2 py-1 focus:outline-none focus:ring-2 focus:ring-gold transition"
                   >
-                    <option value="">Select a view</option>
                     {room.views.map((view) => (
                       <option key={view.viewSeq} value={view.viewSeq}>
                         {view.viewName}
