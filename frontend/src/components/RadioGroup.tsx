@@ -7,14 +7,18 @@ interface RadioGroupProps {
   endpoint: string;
   value?: number;
   onChange: (value: number) => void;
-  className?: string;
+  optionClassName?: string;
+  radioClassName?: string;
+  labelClassName?: string;
 }
 
 export default function RadioGroup({
   endpoint,
   value,
   onChange,
-  className,
+  optionClassName,
+  radioClassName,
+  labelClassName,
 }: RadioGroupProps) {
   const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}${endpoint}`;
 
@@ -27,19 +31,20 @@ export default function RadioGroup({
     },
   });
 
-  if (isLoading) return <div className={className}>Loading...</div>;
-  if (error) return <div className={className}>Error loading options</div>;
+  if (isLoading) return <div className="text-gray-500">Loading...</div>;
+  if (error) return <div className="text-red-500">Error loading options</div>;
 
   return (
     <>
       {data?.map((opt) => (
-        <label key={opt.seq} className={className}>
+        <label key={opt.seq} className={optionClassName}>
           <input
+            className={radioClassName}
             type="radio"
             checked={value === opt.seq}
             onChange={() => onChange(opt.seq)}
           />
-          {opt.name}
+          <span className={labelClassName}>{opt.name}</span>
         </label>
       ))}
     </>

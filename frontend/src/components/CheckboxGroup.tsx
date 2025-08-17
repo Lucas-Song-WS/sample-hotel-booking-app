@@ -7,14 +7,18 @@ interface CheckboxGroupProps {
   endpoint: string;
   value: number[];
   onChange: (value: number[]) => void;
-  className?: string;
+  optionClassName?: string;
+  checkboxClassName?: string;
+  labelClassName?: string;
 }
 
 export default function CheckboxGroup({
   endpoint,
   value,
   onChange,
-  className,
+  optionClassName,
+  checkboxClassName,
+  labelClassName,
 }: CheckboxGroupProps) {
   const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}${endpoint}`;
 
@@ -32,19 +36,20 @@ export default function CheckboxGroup({
     else onChange([...value, seq]);
   };
 
-  if (isLoading) return <div className={className}>Loading...</div>;
-  if (error) return <div className={className}>Error loading options</div>;
+  if (isLoading) return <div className="text-gray-500">Loading...</div>;
+  if (error) return <div className="text-red-500">Error loading options</div>;
 
   return (
     <>
       {data?.map((opt) => (
-        <label key={opt.seq} className={className}>
+        <label key={opt.seq} className={optionClassName}>
           <input
+            className={checkboxClassName}
             type="checkbox"
             checked={value.includes(opt.seq)}
             onChange={() => toggle(opt.seq)}
           />
-          {opt.name}
+          <span className={labelClassName}>{opt.name}</span>
         </label>
       ))}
     </>
