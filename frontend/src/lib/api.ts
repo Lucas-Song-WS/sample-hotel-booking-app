@@ -5,12 +5,19 @@ export const getApiUrl = () => {
   return process.env.NEXT_PUBLIC_API_URL!;
 };
 
-export async function fetchTestList() {
-  const res = await fetch(`${getApiUrl()}/test_db`);
-  return res.json();
-}
-
-export async function fetchTestDetail(seq: number) {
-  const res = await fetch(`${getApiUrl()}/test_db/${seq}`);
-  return res.json();
+export async function fetchJson<T>(
+  url: string,
+  errorDescription?: string,
+  init?: RequestInit
+): Promise<T> {
+  const res = await fetch(getApiUrl() + url, init);
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(
+      `${errorDescription ?? "Request failed"}: ${res.status} ${
+        res.statusText
+      } - ${text}`
+    );
+  }
+  return res.json() as Promise<T>;
 }
