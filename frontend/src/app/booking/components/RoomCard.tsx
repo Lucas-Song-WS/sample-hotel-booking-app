@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import { useState } from "react";
 import { Dialog } from "@/components/Dialog";
 import { RoomResultDTO } from "@/domain/dto/RoomResultDTO";
@@ -38,33 +39,57 @@ export default function RoomCard({ room, onAddRoom }: RoomCardProps) {
     <>
       <div
         onClick={handleOpen}
-        className="border rounded-lg p-4 shadow hover:shadow-md cursor-pointer transition w-full"
+        className="border p-4 shadow hover:shadow-md cursor-pointer transition w-full grid grid-cols-[auto_1fr] md:grid-cols-[auto_1fr_auto] gap-6"
       >
-        <h2 className="text-lg font-semibold">{room.roomTypeName}</h2>
-        <p className="text-sm text-gray-600">{room.roomTypeDesc}</p>
+        <div className="flex items-center">
+          <Image
+            src={`${room.roomTypeImageUrl}?w=320&h=320&fit=crop`}
+            alt={`${room.roomTypeName} image`}
+            width={160}
+            height={160}
+            className="object-cover w-40 h-40"
+          />
+        </div>
 
-        <div className="mt-2 text-sm">
-          <p>
-            <span className="font-medium">Max Occupancy:</span>
-            {room.roomTypeMaxOccupancy}
-          </p>
-          <p>
-            <span className="font-medium">Smoking:</span>
-            {room.smokingAvailable ? "Yes" : "No"} |
-            <span className="font-medium">Non-Smoking:</span>
-            {room.nonsmokingAvailable ? "Yes" : "No"}
-          </p>
-          <p>
-            <span className="font-medium">Beds:</span>
-            {room.beds.map((b) => `${b.bedQty}× ${b.bedName}`).join(", ")}
-          </p>
-          <p>
-            <span className="font-medium">Amenities:</span>
-            {room.amenities.map((a) => a.amenityName).join(", ")}
-          </p>
-          <p className="mt-1 font-semibold">
-            Total Price: RM{room.totalPrice.toFixed(2)}
-          </p>
+        <div className="flex flex-col justify-start">
+          <h2 className="text-lg font-semibold">{room.roomTypeName}</h2>
+          <p className="text-sm text-gray-600">{room.roomTypeDesc}</p>
+
+          <div className="mt-2 text-sm space-y-1">
+            <p>
+              <span className="font-medium">Max Occupancy:</span>{" "}
+              {room.roomTypeMaxOccupancy}
+            </p>
+            <p>
+              <span className="font-medium">Smoking:</span>{" "}
+              {room.smokingAvailable ? "Yes" : "No"} |{" "}
+              <span className="font-medium">Non-Smoking:</span>{" "}
+              {room.nonsmokingAvailable ? "Yes" : "No"}
+            </p>
+            <p>
+              <span className="font-medium">Beds:</span>{" "}
+              {room.beds.map((b) => `${b.bedQty}× ${b.bedName}`).join(", ")}
+            </p>
+            <p>
+              <span className="font-medium">Views:</span>{" "}
+              {room.views.map((v) => v.viewName).join(", ")}
+            </p>
+            <p>
+              <span className="font-medium">Amenities:</span>{" "}
+              {room.amenities.map((a) => a.amenityName).join(", ")}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex flex-col justify-end col-span-full md:col-auto">
+          <div>
+            <div className="font-bold">Total Price:</div>
+            <div className="bg-gray-200 px-4 py-2 w-full flex items-center justify-center">
+              <p className="text-lg font-bold text-gray-800">
+                RM{room.totalPrice.toFixed(2)}
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -107,7 +132,7 @@ export default function RoomCard({ room, onAddRoom }: RoomCardProps) {
                     numAdults: Number(e.target.value),
                   }))
                 }
-                className="border px-3 py-2 rounded w-full"
+                className="border px-3 py-2 w-full"
               />
             </div>
             <div>
@@ -122,7 +147,7 @@ export default function RoomCard({ room, onAddRoom }: RoomCardProps) {
                     numChildren: Number(e.target.value),
                   }))
                 }
-                className="border px-3 py-2 rounded w-full"
+                className="border px-3 py-2 w-full"
               />
             </div>
             <div>
@@ -137,7 +162,7 @@ export default function RoomCard({ room, onAddRoom }: RoomCardProps) {
                       : undefined,
                   }))
                 }
-                className="border px-3 py-2 rounded w-full"
+                className="border px-3 py-2 w-full"
               >
                 <option value="">Select a view</option>
                 {room.views.map((view) => (
@@ -152,7 +177,7 @@ export default function RoomCard({ room, onAddRoom }: RoomCardProps) {
           <div className="mt-4 flex justify-end">
             <button
               onClick={handleAddRoom}
-              className="px-4 py-2 bg-gold text-black font-medium hover:bg-black hover:text-gold transition rounded"
+              className="px-4 py-2 bg-gold text-black font-medium hover:bg-black hover:text-gold transition"
             >
               Add to Booking
             </button>
