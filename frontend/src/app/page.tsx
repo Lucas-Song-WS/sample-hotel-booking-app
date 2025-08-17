@@ -64,7 +64,7 @@ export default function Home() {
           ].map((card, i) => (
             <div
               key={i}
-              className="bg-white rounded-none shadow hover:shadow-lg transition overflow-hidden border border-gold/30"
+              className="bg-white shadow hover:shadow-lg transition overflow-hidden border border-gold/30"
             >
               <Image
                 src={card.img}

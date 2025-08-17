@@ -3,6 +3,7 @@ export interface RoomResultDTO {
   roomTypeName: string;
   roomTypeDesc: string;
   roomTypeMaxOccupancy: number;
+  roomTypeImageUrl: string;
   beds: {
     bedName: string;
     bedQty: number;

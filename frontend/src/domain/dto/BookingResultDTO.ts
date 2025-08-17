@@ -7,9 +7,11 @@ export interface BookingResultDTO {
   status: string;
   rooms: {
     roomTypeSeq: number;
+    roomTypeName: string;
     numAdults: number;
     numChildren: number;
     roomViewSeq?: number;
+    roomViewName?: string;
     roomSmokingYn?: boolean;
     charges: {
       chargeDesc: string;

@@ -41,25 +41,24 @@ export default function MyBookingsPage() {
         {data?.map((booking) => (
           <div
             key={booking.bookingSeq}
-            className="border rounded-lg p-4 shadow"
+            className="border p-4 shadow"
           >
             <h3 className="font-semibold text-lg mb-1">
               Booking ID: {booking.bookingId} ({booking.status})
             </h3>
             <p>
-              {new Date(booking.start).toLocaleDateString()} -
-              {new Date(booking.end).toLocaleDateString()}
+              {booking.start} - {booking.end}
             </p>
             <p className="italic">{booking.remarks}</p>
 
             <div className="mt-2 space-y-2">
               {booking.rooms.map((room, idx) => (
-                <div key={idx} className="p-2 border rounded">
-                  <p>Room Type Seq: {room.roomTypeSeq}</p>
+                <div key={idx} className="p-2 border">
+                  <p>Room Type: {room.roomTypeName}</p>
                   <p>
                     Adults: {room.numAdults}, Children: {room.numChildren}
                   </p>
-                  {room.roomViewSeq && <p>View Seq: {room.roomViewSeq}</p>}
+                  {room.roomViewSeq && <p>View: {room.roomViewName}</p>}
                   {room.roomSmokingYn !== undefined && (
                     <p>Smoking: {room.roomSmokingYn ? "Yes" : "No"}</p>
                   )}
@@ -68,7 +67,7 @@ export default function MyBookingsPage() {
                     <ul className="list-disc ml-5">
                       {room.charges.map((c, i) => (
                         <li key={i}>
-                          {c.chargeDesc}: ${c.chargeAmount.toFixed(2)}
+                          {c.chargeDesc}: RM{c.chargeAmount.toFixed(2)}
                         </li>
                       ))}
                     </ul>

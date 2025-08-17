@@ -25,84 +25,92 @@ export default function RoomSearchForm({
 
   return (
     <form
-  onSubmit={handleSubmit}
-  className="flex flex-wrap gap-6 mb-8 items-end bg-white p-6 rounded-lg shadow border border-gold/30"
->
-  <div className="flex flex-col">
-    <label className="block text-sm font-medium text-gray-800 mb-1">Start Date</label>
-    <input
-      type="date"
-      value={preSearch.start}
-      onChange={(e) =>
-        setPreSearch({ ...preSearch, start: e.target.value })
-      }
-      className="border border-gold/50 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gold transition"
-    />
-  </div>
-
-  <div className="flex flex-col">
-    <label className="block text-sm font-medium text-gray-800 mb-1">End Date</label>
-    <input
-      type="date"
-      value={preSearch.end}
-      onChange={(e) => setPreSearch({ ...preSearch, end: e.target.value })}
-      className="border border-gold/50 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gold transition"
-    />
-  </div>
-
-  <div className="flex flex-col">
-    <label className="block text-sm font-medium text-gray-800 mb-1">Room Type</label>
-    <Select
-      className="border border-gold/50 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gold transition"
-      endpoint="/common/room-types"
-      value={preSearch.roomTypeSeq}
-      onChange={(val) => setPreSearch({ ...preSearch, roomTypeSeq: val })}
-      placeholder="Any"
-    />
-  </div>
-
-  <div className="flex flex-col">
-    <label className="block text-sm font-medium text-gray-800 mb-1">Beds</label>
-    <CheckboxGroup
-      endpoint="/common/room-beds"
-      value={preSearch.roomBedSeqList}
-      onChange={(val) =>
-        setPreSearch({ ...preSearch, roomBedSeqList: val })
-      }
-    />
-  </div>
-
-  <div className="flex flex-col">
-    <label className="block text-sm font-medium text-gray-800 mb-1">Tag</label>
-    <Select
-      className="border border-gold/50 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gold transition"
-      endpoint="/common/tags"
-      value={preSearch.tagSeq}
-      onChange={(val) => setPreSearch({ ...preSearch, tagSeq: val })}
-      placeholder="Any"
-    />
-  </div>
-
-  <div className="flex gap-3 mt-2">
-    <button
-      type="submit"
-      className="px-6 py-2 bg-gold text-black font-medium rounded hover:bg-black hover:text-gold transition border border-gold"
+      onSubmit={handleSubmit}
+      className="flex flex-wrap gap-6 mb-8 items-end bg-white p-6 shadow border border-gold/30"
     >
-      Search
-    </button>
+      <div className="flex flex-col">
+        <label className="block text-sm font-medium text-gray-800 mb-1">
+          Start Date
+        </label>
+        <input
+          type="date"
+          value={preSearch.start}
+          onChange={(e) =>
+            setPreSearch({ ...preSearch, start: e.target.value })
+          }
+          className="border border-gold/50 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gold transition"
+        />
+      </div>
 
-    {onReset && (
-      <button
-        type="button"
-        onClick={onReset}
-        className="px-6 py-2 bg-gray-200 text-gray-900 rounded hover:bg-gray-300 transition border border-gray-300"
-      >
-        Reset
-      </button>
-    )}
-  </div>
-</form>
+      <div className="flex flex-col">
+        <label className="block text-sm font-medium text-gray-800 mb-1">
+          End Date
+        </label>
+        <input
+          type="date"
+          value={preSearch.end}
+          onChange={(e) => setPreSearch({ ...preSearch, end: e.target.value })}
+          className="border border-gold/50 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gold transition"
+        />
+      </div>
 
+      <div className="flex flex-col">
+        <label className="block text-sm font-medium text-gray-800 mb-1">
+          Room Type
+        </label>
+        <Select
+          className="border border-gold/50 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gold transition"
+          endpoint="/common/room-types"
+          value={preSearch.roomTypeSeq}
+          onChange={(val) => setPreSearch({ ...preSearch, roomTypeSeq: val })}
+          placeholder="Any"
+        />
+      </div>
+
+      <div className="flex flex-col">
+        <label className="block text-sm font-medium text-gray-800 mb-1">
+          Beds
+        </label>
+        <CheckboxGroup
+          endpoint="/common/room-beds"
+          value={preSearch.roomBedSeqList}
+          onChange={(val) =>
+            setPreSearch({ ...preSearch, roomBedSeqList: val })
+          }
+        />
+      </div>
+
+      <div className="flex flex-col">
+        <label className="block text-sm font-medium text-gray-800 mb-1">
+          Tag
+        </label>
+        <Select
+          className="border border-gold/50 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gold transition"
+          endpoint="/common/tags"
+          value={preSearch.tagSeq}
+          onChange={(val) => setPreSearch({ ...preSearch, tagSeq: val })}
+          placeholder="Any"
+        />
+      </div>
+
+      <div className="flex gap-3 mt-2">
+        <button
+          type="submit"
+          className="px-6 py-2 bg-gold text-black font-medium hover:bg-black hover:text-gold transition border border-gold"
+        >
+          Search
+        </button>
+
+        {onReset && (
+          <button
+            type="button"
+            onClick={onReset}
+            className="px-6 py-2 bg-gray-200 text-gray-900 hover:bg-gray-300 transition border border-gray-300"
+          >
+            Reset
+          </button>
+        )}
+      </div>
+    </form>
   );
 }
- 
