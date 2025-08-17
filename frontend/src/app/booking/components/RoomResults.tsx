@@ -76,7 +76,7 @@ export default function RoomResults({
       <div className="flex flex-wrap gap-3 mb-6">
         <button
           onClick={() => toggleSort("roomTypeName")}
-          className={`px-4 py-2 border border-gold rounded font-medium text-gray-800 hover:bg-gold hover:text-black transition ${
+          className={`px-4 py-2 border border-gold font-medium text-gray-800 hover:bg-gold hover:text-black transition ${
             pagination.sortField === "roomTypeName" ? "bg-gold text-black" : ""
           }`}
         >
@@ -90,7 +90,7 @@ export default function RoomResults({
 
         <button
           onClick={() => toggleSort("roomTypeMaxOccupancy")}
-          className={`px-4 py-2 border border-gold rounded font-medium text-gray-800 hover:bg-gold hover:text-black transition ${
+          className={`px-4 py-2 border border-gold font-medium text-gray-800 hover:bg-gold hover:text-black transition ${
             pagination.sortField === "roomTypeMaxOccupancy"
               ? "bg-gold text-black"
               : ""
@@ -118,7 +118,7 @@ export default function RoomResults({
       {pages && pages.totalPages > 1 && (
         <div className="mt-6 flex flex-wrap justify-center gap-3">
           <button
-            className="px-4 py-2 border border-gold rounded text-gray-800 hover:bg-gold hover:text-black transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 border border-gold text-gray-800 hover:bg-gold hover:text-black transition disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={pagination.pageNumber === 1}
             onClick={() => goToPage(pagination.pageNumber - 1)}
           >
@@ -129,7 +129,7 @@ export default function RoomResults({
             (page) => (
               <button
                 key={page}
-                className={`px-4 py-2 border border-gold rounded font-medium transition ${
+                className={`px-4 py-2 border border-gold font-medium transition ${
                   page === pagination.pageNumber
                     ? "bg-gold text-black"
                     : "text-gray-800 hover:bg-gold hover:text-black"
@@ -142,7 +142,7 @@ export default function RoomResults({
           )}
 
           <button
-            className="px-4 py-2 border border-gold rounded text-gray-800 hover:bg-gold hover:text-black transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 border border-gold text-gray-800 hover:bg-gold hover:text-black transition disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={pagination.pageNumber === pages.totalPages}
             onClick={() => goToPage(pagination.pageNumber + 1)}
           >

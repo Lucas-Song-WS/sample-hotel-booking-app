@@ -41,7 +41,7 @@ export default function MyBookingsPage() {
         {data?.map((booking) => (
           <div
             key={booking.bookingSeq}
-            className="border rounded-lg p-4 shadow"
+            className="border p-4 shadow"
           >
             <h3 className="font-semibold text-lg mb-1">
               Booking ID: {booking.bookingId} ({booking.status})
@@ -53,7 +53,7 @@ export default function MyBookingsPage() {
 
             <div className="mt-2 space-y-2">
               {booking.rooms.map((room, idx) => (
-                <div key={idx} className="p-2 border rounded">
+                <div key={idx} className="p-2 border">
                   <p>Room Type: {room.roomTypeName}</p>
                   <p>
                     Adults: {room.numAdults}, Children: {room.numChildren}

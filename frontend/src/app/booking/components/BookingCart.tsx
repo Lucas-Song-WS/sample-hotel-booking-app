@@ -36,7 +36,7 @@ export default function BookingCart({ search }: BookingCartProps) {
   };
 
   return (
-    <div className="p-4 bg-white border rounded shadow-lg max-h-[80vh] overflow-y-auto">
+    <div className="p-4 bg-white border shadow-lg max-h-[80vh] overflow-y-auto">
       {!bookingPreview ? (
         <div className="text-center text-gray-500">
           <p className="font-medium">Your cart is empty</p>
@@ -68,7 +68,7 @@ export default function BookingCart({ search }: BookingCartProps) {
                   0
                 );
                 return (
-                  <li key={idx} className="border p-2 rounded">
+                  <li key={idx} className="border p-2">
                     <p>
                       <span className="font-medium">Room Type: </span>
                       {room.roomTypeName}
@@ -126,7 +126,7 @@ export default function BookingCart({ search }: BookingCartProps) {
         <button
           onClick={handleConfirm}
           disabled={!bookingPreview}
-          className={`mt-3 w-full px-4 py-2 rounded font-medium transition
+          className={`mt-3 w-full px-4 py-2 font-medium transition
             ${
               bookingPreview
                 ? "bg-gold text-black hover:bg-black hover:text-gold"
