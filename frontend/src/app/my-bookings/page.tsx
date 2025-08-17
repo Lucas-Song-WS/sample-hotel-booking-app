@@ -68,7 +68,7 @@ export default function MyBookingsPage() {
                     <ul className="list-disc ml-5">
                       {room.charges.map((c, i) => (
                         <li key={i}>
-                          {c.chargeDesc}: ${c.chargeAmount.toFixed(2)}
+                          {c.chargeDesc}: RM{c.chargeAmount.toFixed(2)}
                         </li>
                       ))}
                     </ul>

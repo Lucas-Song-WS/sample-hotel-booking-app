@@ -36,7 +36,7 @@ export default function BookingCart({ search }: BookingCartProps) {
   };
 
   return (
-    <div className="fixed bottom-4 right-4 p-4 bg-white border rounded shadow-lg w-64 z-50">
+    <div className="p-4 bg-white border rounded shadow-lg">
       <h3 className="text-lg font-semibold mb-2">Booking Summary</h3>
       <p className="mb-4">
         Total Rooms: {bookingPreview.rooms.length} <br />

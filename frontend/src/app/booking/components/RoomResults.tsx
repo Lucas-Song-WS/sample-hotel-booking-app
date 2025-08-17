@@ -6,12 +6,7 @@ import { useAtom } from "jotai";
 import { RoomResultDTO } from "@/domain/dto/RoomResultDTO";
 import { RoomSearchDTO } from "@/domain/dto/RoomSearchDTO";
 import { PagesDTO, PaginationDTO } from "@/domain/dto/CommonDTO";
-import {
-  fetchRooms,
-  fetchRoomsPages,
-  fetchBookingPreview,
-  createBooking,
-} from "../api";
+import { fetchRooms, fetchRoomsPages, fetchBookingPreview } from "../api";
 import RoomCard from "./RoomCard";
 import { selectedRoomsAtom, bookingPreviewAtom } from "../context";
 import { BookingRoomDTO } from "../domain/dto/BookingRoom";
@@ -77,7 +72,7 @@ export default function RoomResults({
   if (!rooms || rooms.length === 0) return <p>No rooms found.</p>;
 
   return (
-    <div className="mt-8">
+    <div className="">
       <div className="flex flex-wrap gap-3 mb-6">
         <button
           onClick={() => toggleSort("roomTypeName")}
@@ -110,7 +105,7 @@ export default function RoomResults({
         </button>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6">
         {rooms.map((room) => (
           <RoomCard
             key={room.roomTypeSeq}
